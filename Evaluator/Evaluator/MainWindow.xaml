@@ -1,21 +1,41 @@
 ﻿<Window x:Class="Evaluator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:src="clr-namespace:Evaluator"
+        xmlns:srcp="clr-namespace:Evaluator.Processors"
         Title="Введите арифметическое выражение" Height="240" Width="480" Closing="Window_Closing">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="FindCriteria" ObjectType="{x:Type src:ViewModel}" /> 
+        <src:RadioButtonConverter x:Key="RadioButtonConverter" />
+    </Window.Resources>
     <Grid>
-        <TextBox HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20"/>
-        <Button Content="Старт" HorizontalAlignment="Left" Margin="347,10,0,0" VerticalAlignment="Top" Width="115" Height="34" FontSize="20" Click="Start_Click"/>
-        <Grid HorizontalAlignment="Left" Height="20" Margin="10,60,0,0" VerticalAlignment="Top" Width="328">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <RadioButton Content="Вариант 1" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" GroupName="Options" Grid.Column="0"/>
-            <RadioButton Content="Вариант 2" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="Options" Grid.Column="1"/>
-            <RadioButton Content="Вариант 3" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="Options" Grid.Column="2" />
-        </Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="34" Width="319" FontSize="20" Foreground="#FFEC1414"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,100,0,0" TextWrapping="Wrap" Text="Результат:" VerticalAlignment="Top"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="120" />
+        </Grid.ColumnDefinitions>
+
+        <TextBox Name="txtFormula" Text="{Binding Path=Expression}"  HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20" Grid.Row="0" Grid.ColumnSpan="3"/>
+        <Button Content="Старт" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="115" Height="34" FontSize="20" Click="Start_Click" Grid.Row="0" Grid.Column="5"/>
+        <StackPanel Height="26" Margin="10,10,14,0" Width="328" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="3" >
+        
+            <RadioButton Content="Вариант 1" HorizontalAlignment="Left" GroupName="Options" 
+                         IsChecked="{Binding EnumProperty, Converter={StaticResource RadioButtonConverter}, ConverterParameter={x:Static srcp:eProcType.ProcCS}}" Width="116"/>
+            <RadioButton Content="Вариант 2" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="Options" 
+             Width="117"/>
+            <RadioButton Content="Вариант 3" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="Options" 
+            />
+        </StackPanel>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Результат:" VerticalAlignment="Top" Grid.Row="2"/>
+        <Border BorderBrush="#FFE6BEBE" Margin="10, 10, 10, 10" BorderThickness="1" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TextBlock Name="txtResult" Text="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" Height="34" FontSize="20" Foreground="#FFEC1414" />
+        </Border>
     </Grid>
 </Window>

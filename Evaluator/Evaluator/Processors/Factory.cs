@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+
 namespace Evaluator.Processors
 {    
     public enum eProcType
@@ -9,14 +9,9 @@ namespace Evaluator.Processors
         ProcString
     }
 
-    public abstract class AbstractFactory
+    public class Factory
     {
-        public abstract Processor CreateProcessor(eProcType tp);
-    }
-
-    public class Factory: AbstractFactory
-    {
-        public override Processor CreateProcessor(eProcType tp)
+        public Processor CreateProcessor(eProcType tp)
         {           
             Processor p = null;
             switch(tp)
