@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 
 namespace Evaluator.Processors
 {
@@ -6,7 +7,12 @@ namespace Evaluator.Processors
     {
         public override double Process(string expr)
         {
-            throw new NotImplementedException();
+            DataTable tab = new DataTable();
+            DataColumn col = new DataColumn("Process", typeof(double), expr);
+            tab.Columns.Add(col);
+            tab.Rows.Add(0);
+
+            return (double)(tab.Rows[0]["Process"]);
         }
     }
 }

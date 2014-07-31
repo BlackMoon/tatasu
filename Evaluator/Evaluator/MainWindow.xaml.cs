@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Globalization;
 using System.Windows;
-using System.Windows.Data;
 using Evaluator.Processors;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Evaluator
 {
@@ -10,10 +10,8 @@ namespace Evaluator
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
-        private ViewModel vm = null;
-
-        public string Result { get; set; }
+    {   
+        public double Result { get; set; }
         public string Expression { get; set; }
 
         public MainWindow()
@@ -34,8 +32,16 @@ namespace Evaluator
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             Factory f = new Factory();
-            Processor p = f.CreateProcessor(eProcType.ProcCS);
-            Expression = "1.0f";// p.Process(Expression);
+            Processor p = f.CreateProcessor(eProcType.ProcDataTable);
+            try
+            {
+                Result = p.Process(Expression);
+                txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -50,22 +56,46 @@ namespace Evaluator
             };
             prefs.Save();
         }
-    }
 
-    public class ViewModel {
-        public eProcType ProcType { get; set; }
-    }
-
-    public class RadioButtonConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        private void txtFormula_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            return value.Equals(parameter);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value.Equals(true) ? parameter : Binding.DoNothing;
-        }
-    }
+            switch (e.Key)
+            {
+                case Key.Add:
+                case Key.Subtract:
+                case Key.Multiply:
+                case Key.Divide:
+                case Key.D0:
+                case Key.D1:
+                case Key.D2:
+                case Key.D3:
+                case Key.D4:
+                case Key.D5:
+                case Key.D6:
+                case Key.D7:
+                case Key.D8:
+                case Key.D9:
+                case Key.NumLock:
+                case Key.NumPad0:
+                case Key.NumPad1:
+                case Key.NumPad2:
+                case Key.NumPad3:
+                case Key.NumPad4:
+                case Key.NumPad5:
+                case Key.NumPad6:
+                case Key.NumPad7:
+                case Key.NumPad8:
+                case Key.NumPad9:
+                case Key.Back:
+                case Key.Oem2:
+                case Key.OemMinus:
+                case Key.OemPeriod:
+                case Key.OemPlus:
+                    break;
+                default:
+                    e.Handled = true;
+                    break;
+            }
+        }       
+    }   
 }

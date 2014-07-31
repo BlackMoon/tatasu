@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:src="clr-namespace:Evaluator"
         xmlns:srcp="clr-namespace:Evaluator.Processors"
-        Title="Введите арифметическое выражение" Height="240" Width="480" Closing="Window_Closing">
-    <Window.Resources>
-        <ObjectDataProvider x:Key="FindCriteria" ObjectType="{x:Type src:ViewModel}" /> 
+        Title="Введите арифметическое выражение" Height="240" Width="480" Closing="Window_Closing" Icon="stock.ico" >
+    <Window.Resources>        
         <src:RadioButtonConverter x:Key="RadioButtonConverter" />
     </Window.Resources>
     <Grid>
@@ -22,7 +21,7 @@
             <ColumnDefinition Width="120" />
         </Grid.ColumnDefinitions>
 
-        <TextBox Name="txtFormula" Text="{Binding Path=Expression}"  HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20" Grid.Row="0" Grid.ColumnSpan="3"/>
+        <TextBox Name="txtFormula" Text="{Binding Expression}"  HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20" Grid.Row="0" Grid.ColumnSpan="3" KeyDown="txtFormula_KeyDown"/>
         <Button Content="Старт" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="115" Height="34" FontSize="20" Click="Start_Click" Grid.Row="0" Grid.Column="5"/>
         <StackPanel Height="26" Margin="10,10,14,0" Width="328" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="3" >
         
@@ -35,7 +34,7 @@
         </StackPanel>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Результат:" VerticalAlignment="Top" Grid.Row="2"/>
         <Border BorderBrush="#FFE6BEBE" Margin="10, 10, 10, 10" BorderThickness="1" Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBlock Name="txtResult" Text="{Binding Path=Result}" HorizontalAlignment="Stretch" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" Height="34" FontSize="20" Foreground="#FFEC1414" />
+            <TextBlock Name="txtResult" Text="{Binding Path=Result, Mode=OneWay}" HorizontalAlignment="Stretch" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" Height="34" FontSize="20" Foreground="#FFEC1414" />
         </Border>
     </Grid>
 </Window>
