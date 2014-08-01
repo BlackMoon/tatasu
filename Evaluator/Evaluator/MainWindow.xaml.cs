@@ -3,6 +3,7 @@ using System.Windows;
 using Evaluator.Processors;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace Evaluator
 {
@@ -10,9 +11,43 @@ namespace Evaluator
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {   
+    {
+        private string expression;
         public double Result { get; set; }
-        public string Expression { get; set; }
+        public string Expression { 
+            get
+            {
+                return expression;
+            }
+            set
+            {
+                try
+                {
+                    if (value.IndexOf("**") != -1)
+                    {                        
+                        throw new Exception("Expression can not be empty.");
+                    }
+
+                    if (expression != value)
+                    {
+                        expression = value;
+                        OnPropertyChanged("Expression");
+                    }
+
+                    expression = value;
+                    btnStart.IsEnabled = true;
+                }
+                catch(Exception ex)
+                {
+                    btnStart.IsEnabled = false;
+                    throw ex;
+                }
+            }
+        }
+
+        public eProcType ProcType { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
         {
@@ -20,6 +55,7 @@ namespace Evaluator
 
             txtFormula.DataContext = this;
             txtResult.DataContext = this;
+            DataContext = this;
 
             var prefs = new UserPreferences();
             this.Height = prefs.WindowHeight;
@@ -28,11 +64,20 @@ namespace Evaluator
             this.Left = prefs.WindowLeft;
             this.WindowState = prefs.WindowState;
         }
+        
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+        }
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             Factory f = new Factory();
-            Processor p = f.CreateProcessor(eProcType.ProcDataTable);
+            Processor p = f.CreateProcessor(ProcType);
             try
             {
                 Result = p.Process(Expression);
@@ -91,7 +136,7 @@ namespace Evaluator
                 case Key.OemMinus:
                 case Key.OemPeriod:
                 case Key.OemPlus:
-                    break;
+                    break;               
                 default:
                     e.Handled = true;
                     break;
