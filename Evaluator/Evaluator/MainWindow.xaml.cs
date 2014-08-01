@@ -4,6 +4,8 @@ using Evaluator.Processors;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Evaluator
 {
@@ -12,8 +14,11 @@ namespace Evaluator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<char> signes = new List<char>(new char[] { '+', '-', '.' });
+
         private string expression;
         public double Result { get; set; }
+
         public string Expression { 
             get
             {
@@ -23,10 +28,11 @@ namespace Evaluator
             {
                 try
                 {
-                    if (value.IndexOf("**") != -1)
+                    /*Regex rx = new Regex(@"\*");
+                    if (rx.IsMatch(value))
                     {                        
                         throw new Exception("Expression can not be empty.");
-                    }
+                    }*/
 
                     if (expression != value)
                     {
@@ -53,6 +59,8 @@ namespace Evaluator
         {
             InitializeComponent();
 
+            ProcType = eProcType.ProcString;
+
             txtFormula.DataContext = this;
             txtResult.DataContext = this;
             DataContext = this;
@@ -71,7 +79,6 @@ namespace Evaluator
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -80,8 +87,24 @@ namespace Evaluator
             Processor p = f.CreateProcessor(ProcType);
             try
             {
-                Result = p.Process(Expression);
-                txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
+                string expr = Expression.Trim();
+                if (!string.IsNullOrEmpty(expr))
+                {                     
+                    // начинается с символа
+                    if (signes.Contains(expr[0]))
+                        expr = "0" + expr;
+
+                    // заканчивается на символ
+                    int last = expr.Length - 1;
+                    if (last != 0 && signes.Contains(expr[last]))
+                        expr += '0';                   
+
+                    //expr = Regex.Replace(expr, @"\((\+|\-|\.)", m => m.Value[0] + "0" + m.Value[1]);
+
+                    Result = p.Process(expr);
+                    txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
+                }
+                
             }
             catch (InvalidOperationException ex)
             {
@@ -133,8 +156,9 @@ namespace Evaluator
                 case Key.NumPad9:
                 case Key.Back:
                 case Key.Oem2:
+                case Key.OemComma:
                 case Key.OemMinus:
-                case Key.OemPeriod:
+                case Key.OemPeriod:                    
                 case Key.OemPlus:
                     break;               
                 default:
