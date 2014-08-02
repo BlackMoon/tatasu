@@ -7,12 +7,12 @@ namespace Evaluator.Processors
 {
     public class StringProcessor : Processor
     {
-        private List<string> operators;
-        private List<string> standart_operators = new List<string>(new string[] { "(", ")", "+", "-", "*", "/" });
+        private List<string> ops;
+        private List<string> standart_ops = new List<string>(new string[] { "(", ")", "+", "-", "*", "/" });
 
         public StringProcessor()
         {
-            operators = new List<string>(standart_operators);
+            ops = new List<string>(standart_ops);
         }
 
         private string[] ConvertToPostfixNotation(string input)
@@ -21,7 +21,7 @@ namespace Evaluator.Processors
             Stack<string> stack = new Stack<string>();
             foreach (string c in Separate(input))
             {
-                if (operators.Contains(c))
+                if (ops.Contains(c))
                 {
                     if (stack.Count > 0 && !c.Equals("("))
                     {
@@ -96,7 +96,7 @@ namespace Evaluator.Processors
             while (pos < input.Length)
             {
                 string s = string.Empty + input[pos];
-                if (!standart_operators.Contains(input[pos].ToString()))
+                if (!standart_ops.Contains(input[pos].ToString()))
                 {
                     if (Char.IsDigit(input[pos]))
                     {
@@ -131,7 +131,7 @@ namespace Evaluator.Processors
             string str = queue.Dequeue();
             while (queue.Count >= 0)
             {
-                if (!operators.Contains(str))
+                if (!ops.Contains(str))
                 {
                     stack.Push(str);
                     // для выражения только с 1 операндом
