@@ -7,8 +7,11 @@ namespace Evaluator.Processors
 {
     public class CSProcessor : Processor
     {
-        public override double Process(string expr)
+        public override double Process(string input)
         {
+            string expr = null;
+            if (!ProperExpression(input, out expr)) return 0;
+
             CompilerParameters parms = new CompilerParameters()
             {
                 GenerateExecutable = false, 

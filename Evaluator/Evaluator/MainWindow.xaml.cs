@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using Evaluator.Processors;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace Evaluator
 {
@@ -14,8 +14,6 @@ namespace Evaluator
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<char> signes = new List<char>(new char[] { '+', '-', '.' });
-
         private string expression;
         public double Result { get; set; }
 
@@ -26,13 +24,22 @@ namespace Evaluator
             }
             set
             {
+                bool btnEnabled = true;
+                string msg = null;
+
                 try
                 {
-                    /*Regex rx = new Regex(@"\*");
-                    if (rx.IsMatch(value))
-                    {                        
-                        throw new Exception("Expression can not be empty.");
-                    }*/
+                    // проверка на 2 идущих подряд знака --> (**, //, +*, +/, -*, -/)
+                    if (Regex.IsMatch(value, @"(\*|\/|\+|\-)(\s)?(\*|\/)"))
+                    {
+                        throw new Exception("Синтаксическая ошибка в данном выражении.");
+                    }
+
+                    // проверка на идущее цисло после скобки -->( )9 )
+                    if (Regex.IsMatch(value, @"\)\d+"))
+                    {
+                        throw new Exception("Синтаксическая ошибка в данном выражении.");
+                    }
 
                     if (expression != value)
                     {
@@ -41,12 +48,19 @@ namespace Evaluator
                     }
 
                     expression = value;
-                    btnStart.IsEnabled = true;
+
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    btnStart.IsEnabled = false;
+                    btnEnabled = false;
+                    msg = ex.Message;
+                    
                     throw ex;
+                }
+                finally
+                {
+                    btnStart.IsEnabled = btnEnabled;
+                    txtFormula.ToolTip = msg;
                 }
             }
         }
@@ -86,29 +100,13 @@ namespace Evaluator
             Factory f = new Factory();
             Processor p = f.CreateProcessor(ProcType);
             try
-            {
-                string expr = Expression.Trim();
-                if (!string.IsNullOrEmpty(expr))
-                {                     
-                    // начинается с символа
-                    if (signes.Contains(expr[0]))
-                        expr = "0" + expr;
-
-                    // заканчивается на символ
-                    int last = expr.Length - 1;
-                    if (last != 0 && signes.Contains(expr[last]))
-                        expr += '0';                   
-
-                    //expr = Regex.Replace(expr, @"\((\+|\-|\.)", m => m.Value[0] + "0" + m.Value[1]);
-
-                    Result = p.Process(expr);
-                    txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
-                }
-                
+            {   
+                Result = p.Process(Expression);
+                txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Синтаксическая ошибка в данном выражении.\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -155,8 +153,7 @@ namespace Evaluator
                 case Key.NumPad8:
                 case Key.NumPad9:
                 case Key.Back:
-                case Key.Oem2:
-                case Key.OemComma:
+                case Key.Oem2:                
                 case Key.OemMinus:
                 case Key.OemPeriod:                    
                 case Key.OemPlus:

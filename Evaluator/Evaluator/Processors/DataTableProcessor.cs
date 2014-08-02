@@ -3,21 +3,17 @@ using System.Data;
 
 namespace Evaluator.Processors
 {
-    class DataTableProcessor : Processor
+    public class DataTableProcessor : Processor
     {
-        public override double Process(string expr)
+        public override double Process(string input)
         {
+            string expr = null;
+            if (!ProperExpression(input, out expr)) return 0;
+
             DataTable tab = new DataTable();
-            try
-            {
-                DataColumn col = new DataColumn("Process", typeof(double), expr);
-                tab.Columns.Add(col);
-                tab.Rows.Add(0);
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            DataColumn col = new DataColumn("Process", typeof(double), expr);
+            tab.Columns.Add(col);
+            tab.Rows.Add(0);
 
             return (double)(tab.Rows[0]["Process"]);
         }

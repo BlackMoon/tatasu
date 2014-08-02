@@ -22,7 +22,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBox Name="txtFormula" Text="{Binding Path=Expression, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"  
-                 HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20" Grid.Row="0" Grid.ColumnSpan="3" KeyDown="txtFormula_KeyDown"/>
+                 HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="328" FontSize="20" Grid.Row="0" Grid.ColumnSpan="3" KeyDown="txtFormula_KeyDown" ToolTip="123"/>
         <Button Name="btnStart" Content="Старт" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="115" Height="34" FontSize="20" Click="Start_Click" Grid.Row="0" Grid.Column="5" IsEnabled="False"/>
         <StackPanel Height="46" Margin="10,10,14,0" Width="328" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="3" >
 

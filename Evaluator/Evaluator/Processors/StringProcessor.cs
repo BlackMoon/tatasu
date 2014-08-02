@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Evaluator.Processors
 {
@@ -75,6 +76,19 @@ namespace Evaluator.Processors
             }
         }
 
+        private string PrepareExpression(string input)
+        {
+            string res = input.Replace('.', ',');               // --> замена . на , (для конвертации в число)
+
+            res = Regex.Replace(res, @"(\*|\/|\+|\-|\(),", m => m.Value[0] + "0" + m.Value[1]);            
+            res = Regex.Replace(res, @"^(\-|\+|\,)\d+", m => "0" + m.Value);
+            res = Regex.Replace(res, @"(\*|\/|\+|\-)\+\d+", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
+            res = Regex.Replace(res, @"(\*|\/|\+|\-)\-\d+", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
+            res = Regex.Replace(res, @"\((\+|\-)", m => m.Value[0] + "0" + m.Value.Substring(1));
+
+            return res;
+        }
+
         private IEnumerable<string> Separate(string input)
         {
             int pos = 0;            
@@ -104,70 +118,67 @@ namespace Evaluator.Processors
             }
         }
         
-        public override double Process(string expr)
+        public override double Process(string input)
         {
-            double res = 0;
+            string expr = null;
+            if (!ProperExpression(input, out expr)) return 0;
+
+            expr = PrepareExpression(expr);
             
-            if (!string.IsNullOrEmpty(expr))
+            Stack<string> stack = new Stack<string>();
+            Queue<string> queue = new Queue<string>(ConvertToPostfixNotation(expr));            
+
+            string str = queue.Dequeue();
+            while (queue.Count >= 0)
             {
-                expr = expr.Replace('.', ',');
-
-                Stack<string> stack = new Stack<string>();
-                Queue<string> queue = new Queue<string>(ConvertToPostfixNotation(expr));
-                IFormatProvider ci = new CultureInfo("ru-RU");
-
-                string str = queue.Dequeue();
-                while (queue.Count >= 0)
+                if (!operators.Contains(str))
                 {
-                    if (!operators.Contains(str))
-                    {
-                        stack.Push(str);
-                        // для выражения с 1 операндом
-                        if (queue.Count == 0)
-                            break;
+                    stack.Push(str);
+                    // для выражения только с 1 операндом
+                    if (queue.Count == 0)
+                        break;
 
-                        str = queue.Dequeue();
-                    }
-                    else
-                    {   
-                        double a = Convert.ToDouble(stack.Pop());
-                        double b = Convert.ToDouble(stack.Pop());
-                        double c = 0;
-                        
-                        switch (str)
-                        {
-                            case "+":
-                            {                                    
-                                c = a + b;
-                                break;
-                            }
-                            case "-":
-                            {   
-                                c = b - a;
-                                break;
-                            }
-                            case "*":
-                            {
-                                c = b * a;
-                                break;
-                            }
-                            case "/":
-                            {                                    
-                                c = b / a;
-                                break;
-                            }
-                        }
-
-                        stack.Push(c.ToString());
-                        if (queue.Count > 0)
-                            str = queue.Dequeue();
-                        else
-                            break;
-                    }
+                    str = queue.Dequeue();
                 }
-                res = Convert.ToDouble(stack.Pop());
-            }
-            return res;
+                else
+                {   
+                    double a = Convert.ToDouble(stack.Pop());
+                    double b = Convert.ToDouble(stack.Pop());
+                    double c = 0;
+                        
+                    switch (str)
+                    {
+                        case "+":
+                        {                                    
+                            c = a + b;
+                            break;
+                        }
+                        case "-":
+                        {   
+                            c = b - a;
+                            break;
+                        }
+                        case "*":
+                        {
+                            c = b * a;
+                            break;
+                        }
+                        case "/":
+                        {                                    
+                            c = b / a;
+                            break;
+                        }
+                    }
+
+                    stack.Push(c.ToString());
+                    if (queue.Count > 0)
+                        str = queue.Dequeue();
+                    else
+                        break;
+                }
+            }            
+
+            return Convert.ToDouble(stack.Pop()); 
         }
     }
 }
