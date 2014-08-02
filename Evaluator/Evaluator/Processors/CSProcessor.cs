@@ -1,7 +1,9 @@
 ﻿using Microsoft.CSharp;
 using System;
+using System.Linq;
 using System.CodeDom.Compiler;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Evaluator.Processors
 {
@@ -10,7 +12,7 @@ namespace Evaluator.Processors
         public override double Process(string input)
         {
             string expr = null;
-            if (!ProperExpression(input, out expr)) return 0;
+            if (!ValidExpression(input, out expr)) return 0;
 
             CompilerParameters parms = new CompilerParameters()
             {
@@ -23,7 +25,7 @@ namespace Evaluator.Processors
             CompilerResults res = compiler.CompileAssemblyFromSource(parms, @"public static class Func { public static double Process() { return " + expr + ";} }");
 
             if (res.Errors.HasErrors)
-            {
+            {   
                 throw new InvalidOperationException("Expression has a syntax error.");
             }  
 

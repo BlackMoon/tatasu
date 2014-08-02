@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Evaluator.Processors;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
-using Evaluator.Processors;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
 
 namespace Evaluator
 {
@@ -100,7 +101,7 @@ namespace Evaluator
             Factory f = new Factory();
             Processor p = f.CreateProcessor(ProcType);
             try
-            {   
+            {
                 Result = p.Process(Expression);
                 txtResult.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
             }

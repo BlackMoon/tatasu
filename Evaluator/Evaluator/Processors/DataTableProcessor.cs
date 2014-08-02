@@ -8,7 +8,7 @@ namespace Evaluator.Processors
         public override double Process(string input)
         {
             string expr = null;
-            if (!ProperExpression(input, out expr)) return 0;
+            if (!ValidExpression(input, out expr)) return 0;
 
             DataTable tab = new DataTable();
             DataColumn col = new DataColumn("Process", typeof(double), expr);
