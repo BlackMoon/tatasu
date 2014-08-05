@@ -20,19 +20,16 @@ namespace ModelEditor
 
     class ModelData
     {
-        public List<ModelItem> items { get; set; }
+        public CancellationTokenSource Token { get; set; }
+        public List<ModelItem> Items { get; set; }
 
         public ModelData()
         {
-            items = new List<ModelItem>();
+            Items = new List<ModelItem>();
+            Token = new CancellationTokenSource();
         }
     }
-
-    class TaskCancel
-    {
-        public CancellationTokenSource Token { get; set; }
-        public Task Task { get; set; }
-    }
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -94,7 +91,7 @@ namespace ModelEditor
                             {
                                 ModelItem item = new ModelItem();
                                 item.Name = nd.Name;
-                                td.items.Add(item);  
+                                td.Items.Add(item);  
                             }                            
                         }
                         modelData[(int)i] = td;
@@ -133,7 +130,7 @@ namespace ModelEditor
             Task t = tasks[ix];
             t.Wait();            
 
-            trv_Models.ItemsSource = modelData[ix].items;
+            trv_Models.ItemsSource = modelData[ix].Items;
         }
 
     }
