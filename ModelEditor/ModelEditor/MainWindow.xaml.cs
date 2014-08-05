@@ -12,21 +12,56 @@ using System.Xml;
 
 namespace ModelEditor
 {
-
-    class ModelItem
+    public class ModelItem
     {
+        public bool IsExpanded { get; set; }
         public string Name { get; set; }
+        public List<ModelItem> Items { get; set; }
+
+        public ModelItem()
+        {
+            Items = new List<ModelItem>();
+        }
+        public ModelItem(bool isExpanded) : this()
+        {
+            IsExpanded = isExpanded;
+        }
     }
 
     class ModelData
     {
-        public CancellationTokenSource Token { get; set; }
+        private CancellationTokenSource tokenSource = new CancellationTokenSource();        
+        public string FileName { get; set; }
+        public string FileFullName { get; set; }
+
+        public CancellationToken Token {
+            get 
+            { 
+                return tokenSource.Token; 
+            }
+            set {} 
+        }
+
+        public CancellationTokenSource TokenSource
+        {
+            get
+            {
+                return tokenSource;
+            }
+            set { }
+        }
+
         public List<ModelItem> Items { get; set; }
 
         public ModelData()
         {
-            Items = new List<ModelItem>();
-            Token = new CancellationTokenSource();
+            Items = new List<ModelItem>();            
+        }
+
+        public ModelData(string name, string fullname) : this()
+        {
+            FileName = name;
+            FileFullName = fullname;
         }
     }
     
@@ -34,9 +69,7 @@ namespace ModelEditor
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
-        private int selected;
-        private ModelData[] modelData;
+    {              
         private List<Task> tasks = new List<Task>();
 
         public MainWindow()
@@ -48,7 +81,41 @@ namespace ModelEditor
             this.Width = prefs.WindowWidth;
             this.Top = prefs.WindowTop;
             this.Left = prefs.WindowLeft;
-            this.WindowState = prefs.WindowState;
+            this.WindowState = prefs.WindowState; 
+        }
+
+        private void CancelTasks()
+        {
+            IEnumerable<ModelData> files = (IEnumerable<ModelData>)lst_Files.ItemsSource;
+            if (files != null)
+            { 
+                foreach (ModelData md in files)
+                    md.TokenSource.Cancel();
+            }
+        }
+
+        private void ReadData(ModelData md, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested == true)
+                ct.ThrowIfCancellationRequested();
+            
+            using (FileStream fs = new FileStream(md.FileFullName, FileMode.Open))
+            {
+                XmlDocument xd = new XmlDocument();
+                xd.Load(fs);
+
+                XmlElement el = xd.DocumentElement;
+                ModelItem root = new ModelItem(true);
+                root.Name = el.Name;                
+                md.Items.Add(root);
+
+                foreach (XmlNode nd in el.ChildNodes)
+                {
+                    ModelItem item = new ModelItem();
+                    item.Name = nd.Name;
+                    root.Items.Add(item);
+                }
+            }
         }
 
         private void AboutItem_Click(object sender, RoutedEventArgs e)
@@ -57,47 +124,30 @@ namespace ModelEditor
             AssemblyName an = assembly.GetName();
 
             MessageBox.Show("вер. " + an.Version, "О программе");
-        }
-        
+        }        
 
         private void OpenCommandHandler(object sender, ExecutedRoutedEventArgs e)
         {
             var dlg = new System.Windows.Forms.FolderBrowserDialog();
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                FileInfo[] fis = new DirectoryInfo(dlg.SelectedPath).GetFiles("*.xml");
-                int ix = 0, len = fis.Length;
-                
+                CancelTasks();
+
                 tasks.Clear();
-                tasks.Capacity = len;
-                modelData = new ModelData[len];
-
                 lst_Files.Items.Clear();
-                for (ix = 0; ix < fis.Length; ++ix)
+
+                FileInfo[] fis = new DirectoryInfo(@"d:\dev\brm\_build\conf\dbmi\arm\"/*dlg.SelectedPath*/).GetFiles("*.xml");
+                int len = fis.Length;
+                tasks.Capacity = len;
+
+                foreach (FileInfo fi in fis)
                 {
-                    FileInfo fi = fis[ix];
-                    lst_Files.Items.Add(fi);
+                    ModelData md = new ModelData(fi.Name, fi.FullName);
 
-                    tasks[ix] = Task.Factory.StartNew((Object i) =>
-                    {
-                        ModelData td = new ModelData();
-                        using (FileStream fs = new FileStream(fi.FullName, FileMode.Open))
-                        {
-                            XmlDocument xd = new XmlDocument();
-                            xd.Load(fs);
-
-                            XmlElement root = xd.DocumentElement;
-                            foreach(XmlNode nd in root.ChildNodes)
-                            {
-                                ModelItem item = new ModelItem();
-                                item.Name = nd.Name;
-                                td.Items.Add(item);  
-                            }                            
-                        }
-                        modelData[(int)i] = td;
-                    }, ix);
+                    tasks.Add(Task.Factory.StartNew((_md) => ReadData((ModelData)_md, (_md as ModelData).Token), md, md.Token));                    
+                    lst_Files.Items.Add(md);
                 }
-                selected = Task.WaitAny(tasks.ToArray());
+                int selected = Task.WaitAny(tasks.ToArray());
                 
                 if (selected > -1)
                     lst_Files.SelectedItem = lst_Files.Items.GetItemAt(selected);               
@@ -111,7 +161,7 @@ namespace ModelEditor
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //tasks.ForEach((t) => t. .Cancel());
+            CancelTasks();
 
             var prefs = new UserPreferences
             {
@@ -126,11 +176,14 @@ namespace ModelEditor
 
         private void lst_Files_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int ix = (sender as ListBox).SelectedIndex;
-            Task t = tasks[ix];
-            t.Wait();            
+            int ix = lst_Files.SelectedIndex;
+            if (ix != -1)
+            { 
+                Task t = tasks[lst_Files.SelectedIndex];
+                t.Wait();
 
-            trv_Models.ItemsSource = modelData[ix].Items;
+                trv_Models.ItemsSource = (lst_Files.SelectedItem as ModelData).Items;
+            }
         }
 
     }
