@@ -4,7 +4,8 @@
         xmlns:src="clr-namespace:ModelEditor"
         Title="Редактор моделей" Height="600" Width="900" Closing="Window_Closing">
     <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenCommandHandler" />    
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenCommandHandler" />
+        <CommandBinding Command="ApplicationCommands.Save" Executed="SaveCommandHandler" />
     </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -25,6 +26,11 @@
                         <Image Source="pack://siteoforigin:,,,/Resources/folder_open_16.png" Height="16" Width="16" />
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Со_хранить" InputGestureText="Ctrl+S" Command="Save" >
+                    <MenuItem.Icon>
+                        <Image Source="pack://siteoforigin:,,,/Resources/disk.png" Height="16" Width="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Вы_ход" InputGestureText="Alt+F4"/>
             </MenuItem>
             <MenuItem Header="Плагины">
@@ -39,6 +45,9 @@
                 <Button Command="Open" ToolTip="Открыть">
                     <Image Source="pack://siteoforigin:,,,/Resources/folder_open_16.png"/>
                 </Button>
+                <Button Command="Save" ToolTip="Сохранить">
+                    <Image Source="pack://siteoforigin:,,,/Resources/disk.png"/>
+                </Button>
             </ToolBar>
         </ToolBarTray>
         <ListBox x:Name="lst_Files" Grid.Row="2" Grid.Column="0" SelectionChanged="lst_Files_SelectionChanged">
@@ -48,10 +57,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TreeView x:Name="trv_Models" Grid.Row="2" Grid.Column="1" >            
+        <TreeView x:Name="trv_Models" Grid.Row="2" Grid.Column="1" SelectedItemChanged="trv_Models_SelectedItemChanged" >            
             <TreeView.ItemTemplate>                
                 <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type src:ModelItem}">
-                    <TreeViewItem Header="{Binding Name}" />
+                    <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>                
             </TreeView.ItemTemplate>
             <TreeView.Resources>
@@ -69,7 +78,10 @@
                     <TextBlock Name="lblStatus" />
                 </StatusBarItem>
             </StatusBar>
-        </DockPanel>        
+        </DockPanel>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" >
+            <TextBlock x:Name="tb_Node" TextWrapping="Wrap" />
+        </StackPanel>
 
     </Grid>
 </Window>

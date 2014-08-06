@@ -154,6 +154,11 @@ namespace ModelEditor
             }
         }
 
+        private void SaveCommandHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
         private void ExitItem_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -184,6 +189,15 @@ namespace ModelEditor
 
                 trv_Models.ItemsSource = (lst_Files.SelectedItem as ModelData).Items;
             }
+        }
+
+        private void trv_Models_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ModelItem mi = (ModelItem)e.NewValue;
+            if (mi != null)
+            {
+                tb_Node.Text = mi.Name;
+            }     
         }
 
     }
