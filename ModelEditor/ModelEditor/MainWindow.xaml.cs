@@ -136,21 +136,25 @@ namespace ModelEditor
                 tasks.Clear();
                 lst_Files.Items.Clear();
 
-                FileInfo[] fis = new DirectoryInfo(@"d:\dev\brm\_build\conf\dbmi\arm\"/*dlg.SelectedPath*/).GetFiles("*.xml");
-                int len = fis.Length;
-                tasks.Capacity = len;
-
-                foreach (FileInfo fi in fis)
+                DirectoryInfo di = new DirectoryInfo(@"d:\dev\br\Portal\conf\dbmi\arm\"/*dlg.SelectedPath*/);
+                if (di.Exists)
                 {
-                    ModelData md = new ModelData(fi.Name, fi.FullName);
+                    FileInfo[] fis = di.GetFiles("*.xml");
+                    int len = fis.Length;
+                    tasks.Capacity = len;
 
-                    tasks.Add(Task.Factory.StartNew((_md) => ReadData((ModelData)_md, (_md as ModelData).Token), md, md.Token));                    
-                    lst_Files.Items.Add(md);
+                    foreach (FileInfo fi in fis)
+                    {
+                        ModelData md = new ModelData(fi.Name, fi.FullName);
+
+                        tasks.Add(Task.Factory.StartNew((_md) => ReadData((ModelData)_md, (_md as ModelData).Token), md, md.Token));
+                        lst_Files.Items.Add(md);
+                    }
+                    int selected = Task.WaitAny(tasks.ToArray());
+
+                    if (selected > -1)
+                        lst_Files.SelectedItem = lst_Files.Items.GetItemAt(selected);
                 }
-                int selected = Task.WaitAny(tasks.ToArray());
-                
-                if (selected > -1)
-                    lst_Files.SelectedItem = lst_Files.Items.GetItemAt(selected);               
             }
         }
 
