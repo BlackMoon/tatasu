@@ -24,6 +24,10 @@ namespace EvaluatorTest
 
             double expected = 188.9;            
             Assert.AreEqual(expected, p.Process(expr));
+
+            expr = "1 + 1 - 5 * (.7 / 2 - 4)";
+            expected = 20.25;
+            Assert.AreEqual(expected, p.Process(expr));
         }       
     }
 }
