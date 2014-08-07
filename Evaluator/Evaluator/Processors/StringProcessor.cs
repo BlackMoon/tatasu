@@ -82,8 +82,8 @@ namespace Evaluator.Processors
 
             res = Regex.Replace(res, @"(\*|\/|\+|\-|\(),", m => m.Value[0] + "0" + m.Value[1]);            
             res = Regex.Replace(res, @"^(\-|\+|\,)\d+", m => "0" + m.Value);
-            res = Regex.Replace(res, @"(\*|\/|\+|\-)\+\d+", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
-            res = Regex.Replace(res, @"(\*|\/|\+|\-)\-\d+", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
+            res = Regex.Replace(res, @"(\*|\/|\+|\-)\+\d+(\,\d+)?", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
+            res = Regex.Replace(res, @"(\*|\/|\+|\-)\-\d+(\,\d+)?", m => m.Value[0] + "(0" + m.Value.Substring(1) + ")");
             res = Regex.Replace(res, @"\((\+|\-)", m => m.Value[0] + "0" + m.Value.Substring(1));
 
             return res;
@@ -142,8 +142,8 @@ namespace Evaluator.Processors
                 }
                 else
                 {   
-                    double a = Convert.ToDouble(stack.Pop());
-                    double b = Convert.ToDouble(stack.Pop());
+                    double a = Convert.ToDouble(stack.Pop(), new CultureInfo("ru-RU"));
+                    double b = Convert.ToDouble(stack.Pop(), new CultureInfo("ru-RU"));
                     double c = 0;
                         
                     switch (str)
@@ -176,9 +176,9 @@ namespace Evaluator.Processors
                     else
                         break;
                 }
-            }            
+            }
 
-            return Convert.ToDouble(stack.Pop()); 
+            return Convert.ToDouble(stack.Pop(), new CultureInfo("ru-RU")); 
         }
     }
 }
