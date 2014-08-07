@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -9,62 +7,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
+using ModelEditor.ModelViews;
 
 namespace ModelEditor
-{
-    public class ModelItem
-    {
-        public bool IsExpanded { get; set; }
-        public string Name { get; set; }
-        public List<ModelItem> Items { get; set; }
-
-        public ModelItem()
-        {
-            Items = new List<ModelItem>();
-        }
-        public ModelItem(bool isExpanded) : this()
-        {
-            IsExpanded = isExpanded;
-        }
-    }
-
-    class ModelData
-    {
-        private CancellationTokenSource tokenSource = new CancellationTokenSource();        
-        public string FileName { get; set; }
-        public string FileFullName { get; set; }
-
-        public CancellationToken Token {
-            get 
-            { 
-                return tokenSource.Token; 
-            }
-            set {} 
-        }
-
-        public CancellationTokenSource TokenSource
-        {
-            get
-            {
-                return tokenSource;
-            }
-            set { }
-        }
-
-        public List<ModelItem> Items { get; set; }
-
-        public ModelData()
-        {
-            Items = new List<ModelItem>();            
-        }
-
-        public ModelData(string name, string fullname) : this()
-        {
-            FileName = name;
-            FileFullName = fullname;
-        }
-    }
-    
+{  
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -158,6 +104,11 @@ namespace ModelEditor
             }
         }
 
+        private void SaveCommandHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
         private void ExitItem_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -188,6 +139,15 @@ namespace ModelEditor
 
                 trv_Models.ItemsSource = (lst_Files.SelectedItem as ModelData).Items;
             }
+        }
+
+        private void trv_Models_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ModelItem mi = (ModelItem)e.NewValue;
+            if (mi != null)
+            {
+                tb_Node.Text = mi.Name;
+            }     
         }
 
     }
