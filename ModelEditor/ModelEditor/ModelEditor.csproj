@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="ModelViews\ModelItem.cs" />
     <Compile Include="Plugins\IPlugin.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="UserPreferences.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -34,8 +34,7 @@ namespace ModelEditor.ModelViews
             get
             {
                 return tokenSource.Token;
-            }
-            set { }
+            }            
         }
 
         public CancellationTokenSource TokenSource
@@ -43,8 +42,7 @@ namespace ModelEditor.ModelViews
             get
             {
                 return tokenSource;
-            }
-            set { }
+            }           
         }
 
         public List<ModelItem> Items { get; set; }
