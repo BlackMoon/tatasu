@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
 using ModelEditor.ViewModels;
+using ModelEditor.Models;
 
 namespace ModelEditor
 {  
@@ -55,13 +56,13 @@ namespace ModelEditor
                 xd.Load(fs);
 
                 XmlElement el = xd.DocumentElement;
-                ModelItem root = new ModelItem(true);
+                TreeViewModel root = new TreeViewModel() {  IsExpanded = true };
                 root.Name = el.Name;                
                 fd.Items.Add(root);
 
                 foreach (XmlNode nd in el.ChildNodes)
                 {
-                    ModelItem item = new ModelItem();
+                    TreeViewModel item = new TreeViewModel();
                     item.Name = nd.Name;
                     root.Items.Add(item);
                 }
@@ -100,11 +101,13 @@ namespace ModelEditor
                         lvm.Items.Add(fd);
                     }
 
-                    int selected = Task.WaitAny(tasks.ToArray());
-                    lvm.Loaded = true;
+                    int selected = Task.WaitAny(tasks.ToArray());                    
 
                     if (selected > -1)
+                    {
+                        lvm.Loaded = true;
                         lvm.SelectedItem = lvm.Items[selected];
+                    }
                 }
             }
         }
@@ -142,16 +145,16 @@ namespace ModelEditor
                 Task t = tasks[lst_Files.SelectedIndex];
                 t.Wait();
 
-                trv_Models.ItemsSource = (lvm.SelectedItem as FileData).Items;
+                trv_Models.ItemsSource = lvm.SelectedItem.Items;
             }
         }
 
         private void trv_Models_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ModelItem mi = (ModelItem)e.NewValue;
-            if (mi != null)
+            TreeViewModel tvm = (TreeViewModel)e.NewValue;
+            if (tvm != null)
             {
-                tb_Node.Text = mi.Name;
+                tb_Node.Text = tvm.Name;
             }     
         }
 

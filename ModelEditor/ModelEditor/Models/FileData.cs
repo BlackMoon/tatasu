@@ -1,28 +1,9 @@
-﻿using System;
+﻿using ModelEditor.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
-namespace ModelEditor.ViewModels
+namespace ModelEditor.Models
 {
-    public class ModelItem
-    {
-        public bool IsExpanded { get; set; }
-        public string Name { get; set; }
-        public List<ModelItem> Items { get; set; }
-
-        public ModelItem()
-        {
-            Items = new List<ModelItem>();
-        }
-        public ModelItem(bool isExpanded)
-            : this()
-        {
-            IsExpanded = isExpanded;
-        }
-    }
-
     public class FileData
     {
         private CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -34,7 +15,7 @@ namespace ModelEditor.ViewModels
             get
             {
                 return tokenSource.Token;
-            }            
+            }
         }
 
         public CancellationTokenSource TokenSource
@@ -42,14 +23,14 @@ namespace ModelEditor.ViewModels
             get
             {
                 return tokenSource;
-            }           
+            }
         }
 
-        public List<ModelItem> Items { get; set; }
+        public List<TreeViewModel> Items { get; set; }
 
         public FileData()
         {
-            Items = new List<ModelItem>();
+            Items = new List<TreeViewModel>();
         }
 
         public FileData(string name, string fullname)
@@ -59,5 +40,4 @@ namespace ModelEditor.ViewModels
             FileFullName = fullname;
         }
     }
-
 }

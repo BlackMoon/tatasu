@@ -1,7 +1,7 @@
 ﻿
 namespace ModelEditor.Plugins
 {
-    interface IPlugin
+    public interface IPlugin
     {
     }
 }

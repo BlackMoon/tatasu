@@ -28,7 +28,7 @@ namespace ModelEditor
 
         private void btnReload_Click(object sender, RoutedEventArgs e)
         {
-            pluginManager.Load();
+            pluginManager.Task.Wait();
         }
     }
 }

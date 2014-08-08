@@ -1,7 +1,5 @@
-﻿
-using System.Collections.Generic;
+﻿using ModelEditor.Models;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace ModelEditor.ViewModels
 {

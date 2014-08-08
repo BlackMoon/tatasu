@@ -49,7 +49,7 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <ListBox x:Name="lst_Files" Grid.Row="2" Grid.Column="0" SelectionChanged="lst_Files_SelectionChanged" ItemsSource="{Binding Items, IsAsync=True}" SelectedItem="{Binding SelectedItem}">
+        <ListBox x:Name="lst_Files" Grid.Row="2" Grid.Column="0" SelectionChanged="lst_Files_SelectionChanged" ItemsSource="{Binding Items, IsAsync=True}" SelectedItem="{Binding SelectedItem}" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding FileName}"/>
@@ -67,7 +67,7 @@
         </ListBox>
         <TreeView x:Name="trv_Models" Grid.Row="2" Grid.Column="1" SelectedItemChanged="trv_Models_SelectedItemChanged" >            
             <TreeView.ItemTemplate>                
-                <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type src:ModelItem}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type src:TreeViewModel}">
                     <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>                
             </TreeView.ItemTemplate>

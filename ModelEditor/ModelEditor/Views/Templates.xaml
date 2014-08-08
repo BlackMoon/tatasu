@@ -35,7 +35,7 @@
                         </EventTrigger>
                     </Image.Triggers>
                 </Image>
-                <TextBlock Text="Please wait while items is loading..." />
+                <TextBlock Text="Идет загрузка..." />
             </DockPanel>
         </Border>
     </ControlTemplate>
