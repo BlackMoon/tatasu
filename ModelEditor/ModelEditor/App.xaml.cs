@@ -8,11 +8,9 @@ namespace ModelEditor
     /// </summary>
     public partial class App : Application
     {
-        public PluginManager PluginManager = PluginManager.Instance;
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            PluginManager.Load();
+            PluginManager.Instance.Load();
         }        
     }
 }

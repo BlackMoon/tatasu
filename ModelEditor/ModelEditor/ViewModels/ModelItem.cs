@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace ModelEditor.ModelViews
+namespace ModelEditor.ViewModels
 {
     public class ModelItem
     {
@@ -23,7 +23,7 @@ namespace ModelEditor.ModelViews
         }
     }
 
-    public class ModelData
+    public class FileData
     {
         private CancellationTokenSource tokenSource = new CancellationTokenSource();
         public string FileName { get; set; }
@@ -47,12 +47,12 @@ namespace ModelEditor.ModelViews
 
         public List<ModelItem> Items { get; set; }
 
-        public ModelData()
+        public FileData()
         {
             Items = new List<ModelItem>();
         }
 
-        public ModelData(string name, string fullname)
+        public FileData(string name, string fullname)
             : this()
         {
             FileName = name;

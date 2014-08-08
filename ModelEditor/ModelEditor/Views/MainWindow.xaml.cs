@@ -7,8 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
-using ModelEditor.ModelViews;
-using ModelEditor.Plugins;
+using ModelEditor.ViewModels;
 
 namespace ModelEditor
 {  
@@ -17,11 +16,14 @@ namespace ModelEditor
     /// </summary>
     public partial class MainWindow : Window
     {              
-        private List<Task> tasks = new List<Task>();        
+        private List<Task> tasks = new List<Task>();
+        private ListViewModel lvm = new ListViewModel();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            lst_Files.DataContext = lvm;
 
             var prefs = new UserPreferences();
             this.Height = prefs.WindowHeight;
@@ -33,20 +35,21 @@ namespace ModelEditor
 
         private void CancelTasks()
         {
-            IEnumerable<ModelData> files = (IEnumerable<ModelData>)lst_Files.ItemsSource;
+            IEnumerable<FileData> files = (IEnumerable<FileData>)lst_Files.ItemsSource;
             if (files != null)
             { 
-                foreach (ModelData md in files)
-                    md.TokenSource.Cancel();
+                foreach (FileData fd in files)
+                    fd.TokenSource.Cancel();
             }
+            tasks.Clear();                
         }
 
-        private void ReadData(ModelData md, CancellationToken ct)
+        private void ReadFile(FileData fd, CancellationToken ct)
         {
             if (ct.IsCancellationRequested == true)
                 ct.ThrowIfCancellationRequested();
             
-            using (FileStream fs = new FileStream(md.FileFullName, FileMode.Open))
+            using (FileStream fs = new FileStream(fd.FileFullName, FileMode.Open))
             {
                 XmlDocument xd = new XmlDocument();
                 xd.Load(fs);
@@ -54,7 +57,7 @@ namespace ModelEditor
                 XmlElement el = xd.DocumentElement;
                 ModelItem root = new ModelItem(true);
                 root.Name = el.Name;                
-                md.Items.Add(root);
+                fd.Items.Add(root);
 
                 foreach (XmlNode nd in el.ChildNodes)
                 {
@@ -80,27 +83,28 @@ namespace ModelEditor
             {
                 CancelTasks();
 
-                tasks.Clear();
-                lst_Files.Items.Clear();
+                lvm.Loaded = false;
+                lvm.Items.Clear();
 
                 DirectoryInfo di = new DirectoryInfo(@"d:\dev\br\Portal\conf\dbmi\arm\"/*dlg.SelectedPath*/);
                 if (di.Exists)
                 {
-                    FileInfo[] fis = di.GetFiles("*.xml");
-                    int len = fis.Length;
-                    tasks.Capacity = len;
-
+                    FileInfo[] fis = di.GetFiles("*.xml");                    
+                    tasks.Capacity = fis.Length;
+                    
                     foreach (FileInfo fi in fis)
                     {
-                        ModelData md = new ModelData(fi.Name, fi.FullName);
+                        FileData fd = new FileData(fi.Name, fi.FullName);
 
-                        tasks.Add(Task.Factory.StartNew((_md) => ReadData((ModelData)_md, (_md as ModelData).Token), md, md.Token));
-                        lst_Files.Items.Add(md);
+                        tasks.Add(Task.Factory.StartNew((_fd) => ReadFile((FileData)_fd, (_fd as FileData).Token), fd, fd.Token));
+                        lvm.Items.Add(fd);
                     }
+
                     int selected = Task.WaitAny(tasks.ToArray());
+                    lvm.Loaded = true;
 
                     if (selected > -1)
-                        lst_Files.SelectedItem = lst_Files.Items.GetItemAt(selected);
+                        lvm.SelectedItem = lvm.Items[selected];
                 }
             }
         }
@@ -138,7 +142,7 @@ namespace ModelEditor
                 Task t = tasks[lst_Files.SelectedIndex];
                 t.Wait();
 
-                trv_Models.ItemsSource = (lst_Files.SelectedItem as ModelData).Items;
+                trv_Models.ItemsSource = (lvm.SelectedItem as FileData).Items;
             }
         }
 
@@ -151,9 +155,9 @@ namespace ModelEditor
             }     
         }
 
-        private void ReloadItem_Click(object sender, RoutedEventArgs e)
+        private void PluginItem_Click(object sender, RoutedEventArgs e)
         {
-            PluginManager.Instance.Load();   
+            new PluginWindow(){ Owner = this }.ShowDialog();            
         }
     }
 }
