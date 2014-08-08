@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
 using ModelEditor.ModelViews;
+using ModelEditor.Plugins;
 
 namespace ModelEditor
 {  
@@ -16,7 +17,7 @@ namespace ModelEditor
     /// </summary>
     public partial class MainWindow : Window
     {              
-        private List<Task> tasks = new List<Task>();
+        private List<Task> tasks = new List<Task>();        
 
         public MainWindow()
         {
@@ -150,5 +151,9 @@ namespace ModelEditor
             }     
         }
 
+        private void ReloadItem_Click(object sender, RoutedEventArgs e)
+        {
+            PluginManager.Instance.Load();   
+        }
     }
 }

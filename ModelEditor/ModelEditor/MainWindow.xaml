@@ -34,7 +34,7 @@
                 <MenuItem Header="Вы_ход" InputGestureText="Alt+F4"/>
             </MenuItem>
             <MenuItem Header="Плагины">
-                <MenuItem Header="_О програме" />
+                <MenuItem Header="Обновить" Click="ReloadItem_Click" />
             </MenuItem>
             <MenuItem Header="_Справка">
                 <MenuItem Header="_О програме" Click="AboutItem_Click"/>
