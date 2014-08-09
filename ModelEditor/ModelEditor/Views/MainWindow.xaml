@@ -86,6 +86,9 @@
                 </Style>
             </TreeView.Resources>
         </TreeView>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Grid.Row="3" VerticalAlignment="Stretch" >
+            <TextBlock x:Name="tb_Node" TextWrapping="Wrap" /><DataGrid />
+        </StackPanel>
         <DockPanel Grid.ColumnSpan="3" Grid.Row="4">
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
@@ -95,9 +98,6 @@
                     <TextBlock Name="lblStatus" />
                 </StatusBarItem>
             </StatusBar>
-        </DockPanel>
-        <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Grid.Row="3" VerticalAlignment="Stretch" >
-            <TextBlock x:Name="tb_Node" TextWrapping="Wrap" />
-        </StackPanel>
+        </DockPanel>        
     </Grid>
 </Window>

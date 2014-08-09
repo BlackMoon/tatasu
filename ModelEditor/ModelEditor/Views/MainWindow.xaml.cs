@@ -48,27 +48,13 @@ namespace ModelEditor
             }
             tasks.Clear();                
         }
-
-        private string GetNameFromPlugin(XmlNode nd)
-        {
-            string name = nd.Name;
-
-            if (pluginManager.Plugins.ContainsKey(nd.Name))
-            {
-                PluginDescription pd = pluginManager.Plugins[nd.Name];
-                IPlugin p = pd.Plugin;
-                name = p.GetNodeName(nd);
-            }
-
-            return name;
-        }
-
+    
         private void IterateNodes(TreeViewModel tvm, XmlNode el)
         {
             foreach (XmlNode nd in el.ChildNodes)
             {
-                TreeViewModel item = new TreeViewModel();
-                item.Name = GetNameFromPlugin(nd);
+                TreeViewModel item = new TreeViewModel() { Node = nd };
+                item.AttachPlugin();                
                 
                 tvm.Items.Add(item);
                 IterateNodes(item, nd);
@@ -86,8 +72,8 @@ namespace ModelEditor
                 xd.Load(fs);
                 
                 XmlElement el = xd.DocumentElement;
-                TreeViewModel root = new TreeViewModel() {  IsExpanded = true };                
-                root.Name = GetNameFromPlugin(el);                
+                TreeViewModel root = new TreeViewModel() { IsExpanded = true, Node = el };
+                root.AttachPlugin();                
 
                 fd.Items.Add(root);
                 IterateNodes(root, el);
@@ -109,12 +95,12 @@ namespace ModelEditor
             {
                 CancelTasks();
 
-                lvm.Loaded = false;
-                lvm.Items.Clear();
-
-                DirectoryInfo di = new DirectoryInfo(@"d:\dev\br\tatasu\task\"/*dlg.SelectedPath*/);
+                DirectoryInfo di = new DirectoryInfo(@"d:\dev\tatasu\task\"/*dlg.SelectedPath*/);
                 if (di.Exists)
                 {
+                    lvm.Loaded = false;
+                    lvm.Items.Clear();
+
                     pluginManager.Task.Wait();
 
                     FileInfo[] fis = di.GetFiles("*.xml");                    
@@ -128,13 +114,11 @@ namespace ModelEditor
                         lvm.Items.Add(fd);
                     }
 
-                    int selected = Task.WaitAny(tasks.ToArray());                    
-
-                    if (selected > -1)
-                    {
-                        lvm.Loaded = true;
+                    int selected = Task.WaitAny(tasks.ToArray());
+                    if (selected > -1)                                          
                         lvm.SelectedItem = lvm.Items[selected];
-                    }
+                    
+                    lvm.Loaded = true;
                 }
             }
         }
