@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using ModelEditor.Plugins;
+using System.Windows.Input;
+using ModelEditor.ViewModels;
 
 namespace ModelEditor
 {
@@ -20,15 +11,33 @@ namespace ModelEditor
     public partial class PluginWindow : Window
     {
         private PluginManager pluginManager = PluginManager.Instance;
+        private PluginViewModel pvm = new PluginViewModel();
 
         public PluginWindow()
         {
             InitializeComponent();
+            lst_Plugins.DataContext = pvm;
+
+            pluginManager.Task.Wait();
+            foreach (PluginDescription pd in pluginManager.Plugins.Values)
+            {
+                pvm.Items.Add(pd);
+            }
         }  
 
         private void btnReload_Click(object sender, RoutedEventArgs e)
         {
+            pluginManager.LoadFromFolder();
             pluginManager.Task.Wait();
+            foreach (PluginDescription pd in pluginManager.Plugins.Values)
+            {
+                pvm.Items.Add(pd);
+            }
+        }
+
+        private void OnCloseCmd(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

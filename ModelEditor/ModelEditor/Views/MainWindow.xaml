@@ -11,6 +11,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -33,7 +34,7 @@
                 </MenuItem>
                 <MenuItem Header="Вы_ход" InputGestureText="Alt+F4"/>
             </MenuItem>
-            <MenuItem Header="Плагины" Click="PluginItem_Click">                
+            <MenuItem Header="Плагины" Click="PluginItem_Click">
             </MenuItem>
             <MenuItem Header="_Справка">
                 <MenuItem Header="_О програме" Click="AboutItem_Click"/>
@@ -48,8 +49,16 @@
                     <Image Source="pack://siteoforigin:,,,/Resources/disk.png"/>
                 </Button>
             </ToolBar>
+            <ToolBar>
+                <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <CheckBox Content="Запомнить выбор" />
+                </DockPanel>
+            </ToolBar>
         </ToolBarTray>
-        <ListBox x:Name="lst_Files" Grid.Row="2" Grid.Column="0" SelectionChanged="lst_Files_SelectionChanged" ItemsSource="{Binding Items, IsAsync=True}" SelectedItem="{Binding SelectedItem}" >
+        <Label Content="Файлы" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top" Foreground="#FF5C5CD1"/>
+        <Label Content="Модели" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top" Foreground="#FF5C5CD1"/>
+        <Label Content="Редактирование" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="2" VerticalAlignment="Top" Foreground="#FF5C5CD1"/>
+        <ListBox x:Name="lst_Files" Grid.Row="3" Grid.Column="0" SelectionChanged="lst_Files_SelectionChanged" ItemsSource="{Binding Items, IsAsync=True}" SelectedItem="{Binding SelectedItem}" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding FileName}"/>
@@ -58,18 +67,18 @@
             <ListBox.Style>
                 <Style TargetType="{x:Type ListBox}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Loaded}" Value="False">                        
+                        <DataTrigger Binding="{Binding Loaded}" Value="False">
                             <Setter Property="Template" Value="{StaticResource WaitControlTemplate}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ListBox.Style>
+            </ListBox.Style>            
         </ListBox>
-        <TreeView x:Name="trv_Models" Grid.Row="2" Grid.Column="1" SelectedItemChanged="trv_Models_SelectedItemChanged" >            
-            <TreeView.ItemTemplate>                
+        <TreeView x:Name="trv_Models" Grid.Row="3" Grid.Column="1" SelectedItemChanged="trv_Models_SelectedItemChanged" >
+            <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Items}" DataType="{x:Type src:TreeViewModel}">
                     <TextBlock Text="{Binding Name}" />
-                </HierarchicalDataTemplate>                
+                </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
             <TreeView.Resources>
                 <Style TargetType="TreeViewItem">
@@ -77,7 +86,7 @@
                 </Style>
             </TreeView.Resources>
         </TreeView>
-        <DockPanel Grid.ColumnSpan="3" Grid.Row="3">
+        <DockPanel Grid.ColumnSpan="3" Grid.Row="4">
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
                     <TextBlock Name="lblInfo" />
@@ -87,9 +96,8 @@
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>
-        <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" >
+        <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Grid.Row="3" VerticalAlignment="Stretch" >
             <TextBlock x:Name="tb_Node" TextWrapping="Wrap" />
         </StackPanel>
-
     </Grid>
 </Window>

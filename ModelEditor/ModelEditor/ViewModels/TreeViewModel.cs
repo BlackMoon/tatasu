@@ -19,7 +19,7 @@ namespace ModelEditor.ViewModels
                 OnPropertyChanged("IsExpanded");
             }
         }
-        public string Name { get; set; }
+        public string Name { get; set; }       
 
         public ObservableCollection<TreeViewModel> Items { 
             get

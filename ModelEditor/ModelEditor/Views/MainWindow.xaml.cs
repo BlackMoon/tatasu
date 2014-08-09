@@ -36,7 +36,7 @@ namespace ModelEditor
 
         private void CancelTasks()
         {
-            IEnumerable<FileData> files = (IEnumerable<FileData>)lst_Files.ItemsSource;
+            IEnumerable<FileData> files = lvm.Items;
             if (files != null)
             { 
                 foreach (FileData fd in files)
