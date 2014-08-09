@@ -1,4 +1,5 @@
 ﻿using PluginInterface;
+using System.Xml;
 
 namespace ModelEditorPlugins
 {
@@ -24,6 +25,17 @@ namespace ModelEditorPlugins
             {
                 return node;
             }
+        }
+
+        public string GetNodeName(XmlNode nd)
+        {
+            string name = nd.Name;
+
+            var attr = nd.Attributes["Name"];
+            if (attr != null)
+                name = attr.Value;
+
+            return name;
         }
     }
 }

@@ -9,6 +9,8 @@ using System.Windows.Input;
 using System.Xml;
 using ModelEditor.ViewModels;
 using ModelEditor.Models;
+using ModelEditor.Plugins;
+using PluginInterface;
 
 namespace ModelEditor
 {  
@@ -16,7 +18,9 @@ namespace ModelEditor
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {              
+    {
+        private PluginManager pluginManager = PluginManager.Instance;
+
         private List<Task> tasks = new List<Task>();
         private ListViewModel lvm = new ListViewModel();
 
@@ -45,6 +49,32 @@ namespace ModelEditor
             tasks.Clear();                
         }
 
+        private string GetNameFromPlugin(XmlNode nd)
+        {
+            string name = nd.Name;
+
+            if (pluginManager.Plugins.ContainsKey(nd.Name))
+            {
+                PluginDescription pd = pluginManager.Plugins[nd.Name];
+                IPlugin p = pd.Plugin;
+                name = p.GetNodeName(nd);
+            }
+
+            return name;
+        }
+
+        private void IterateNodes(TreeViewModel tvm, XmlNode el)
+        {
+            foreach (XmlNode nd in el.ChildNodes)
+            {
+                TreeViewModel item = new TreeViewModel();
+                item.Name = GetNameFromPlugin(nd);
+                
+                tvm.Items.Add(item);
+                IterateNodes(item, nd);
+            }
+        }
+
         private void ReadFile(FileData fd, CancellationToken ct)
         {
             if (ct.IsCancellationRequested == true)
@@ -54,18 +84,13 @@ namespace ModelEditor
             {
                 XmlDocument xd = new XmlDocument();
                 xd.Load(fs);
-
+                
                 XmlElement el = xd.DocumentElement;
-                TreeViewModel root = new TreeViewModel() {  IsExpanded = true };
-                root.Name = el.Name;                
-                fd.Items.Add(root);
+                TreeViewModel root = new TreeViewModel() {  IsExpanded = true };                
+                root.Name = GetNameFromPlugin(el);                
 
-                foreach (XmlNode nd in el.ChildNodes)
-                {
-                    TreeViewModel item = new TreeViewModel();
-                    item.Name = nd.Name;
-                    root.Items.Add(item);
-                }
+                fd.Items.Add(root);
+                IterateNodes(root, el);
             }
         }
 
@@ -87,9 +112,11 @@ namespace ModelEditor
                 lvm.Loaded = false;
                 lvm.Items.Clear();
 
-                DirectoryInfo di = new DirectoryInfo(@"d:\dev\br\Portal\conf\dbmi\arm\"/*dlg.SelectedPath*/);
+                DirectoryInfo di = new DirectoryInfo(@"d:\dev\br\tatasu\task\"/*dlg.SelectedPath*/);
                 if (di.Exists)
                 {
+                    pluginManager.Task.Wait();
+
                     FileInfo[] fis = di.GetFiles("*.xml");                    
                     tasks.Capacity = fis.Length;
                     

@@ -1,4 +1,5 @@
-﻿
+﻿using System.Xml;
+
 namespace PluginInterface
 {
     /// <summary>
@@ -8,5 +9,7 @@ namespace PluginInterface
     {
         string Node { get; }                   // тип узла модели (Parameter, Commands, Equipments)
         int Version { get; }                   // версия плагина
+
+        string GetNodeName(XmlNode nd);
     }
 }
