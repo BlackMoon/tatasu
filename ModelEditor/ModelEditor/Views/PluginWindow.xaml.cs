@@ -17,7 +17,7 @@ namespace ModelEditor
         {
             InitializeComponent();
             lst_Plugins.DataContext = pvm;
-
+            
             pluginManager.Task.Wait();
             foreach (PluginDescription pd in pluginManager.Plugins.Values)
             {
@@ -29,6 +29,8 @@ namespace ModelEditor
         {
             pluginManager.LoadFromFolder();
             pluginManager.Task.Wait();
+            
+            pvm.Items.Clear();
             foreach (PluginDescription pd in pluginManager.Plugins.Values)
             {
                 pvm.Items.Add(pd);

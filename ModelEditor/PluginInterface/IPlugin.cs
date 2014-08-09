@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Windows;
+using System.Xml;
 
 namespace PluginInterface
 {
@@ -8,8 +9,9 @@ namespace PluginInterface
     public interface IPlugin
     {
         string Node { get; }                   // тип узла модели (Parameter, Commands, Equipments)
-        int Version { get; }                   // версия плагина
+        int Version { get; }                   // версия плагина        
 
         string GetNodeName(XmlNode nd);
+        UIElement GetEditor(XmlNode nd);
     }
 }

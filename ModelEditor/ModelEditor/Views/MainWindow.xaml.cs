@@ -49,15 +49,15 @@ namespace ModelEditor
             tasks.Clear();                
         }
     
-        private void IterateNodes(TreeViewModel tvm, XmlNode el)
+        private void IterateXml(TreeViewModel tvm, XmlNode el)
         {
             foreach (XmlNode nd in el.ChildNodes)
             {
                 TreeViewModel item = new TreeViewModel() { Node = nd };
-                item.AttachPlugin();                
+                if (!item.AttachPlugin())
+                    IterateXml(item, nd);
                 
                 tvm.Items.Add(item);
-                IterateNodes(item, nd);
             }
         }
 
@@ -73,10 +73,10 @@ namespace ModelEditor
                 
                 XmlElement el = xd.DocumentElement;
                 TreeViewModel root = new TreeViewModel() { IsExpanded = true, Node = el };
-                root.AttachPlugin();                
-
-                fd.Items.Add(root);
-                IterateNodes(root, el);
+                if (!root.AttachPlugin())
+                    IterateXml(root, el);
+                
+                fd.Items.Add(root);                
             }
         }
 
@@ -165,8 +165,9 @@ namespace ModelEditor
             TreeViewModel tvm = (TreeViewModel)e.NewValue;
             if (tvm != null)
             {
-                tb_Node.Text = tvm.Name;
-            }     
+                pn_Editor.Children.Clear();
+                pn_Editor.Children.Add(tvm.Editor);
+            }
         }
 
         private void PluginItem_Click(object sender, RoutedEventArgs e)
