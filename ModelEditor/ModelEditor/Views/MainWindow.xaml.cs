@@ -25,8 +25,9 @@ namespace ModelEditor
         private List<Task> tasks = new List<Task>();
         private ListViewModel lvm = new ListViewModel();
 
-        private bool saveChoice = true;
-        private string path;
+        private bool saveChoice = false;
+        private int selected = -1;
+        private string path = "";
         private string state;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -86,12 +87,22 @@ namespace ModelEditor
             DataContext = this;
             lst_Files.DataContext = lvm;
 
-            var prefs = new UserPreferences();
-            this.Height = prefs.WindowHeight;
-            this.Width = prefs.WindowWidth;
-            this.Top = prefs.WindowTop;
-            this.Left = prefs.WindowLeft;
-            this.WindowState = prefs.WindowState; 
+            // load preferences
+            var rprefs = new ReestrPreferences();
+            this.SaveChoice = rprefs.SaveChoice;
+            if (rprefs.SaveChoice)
+            {
+                this.Path = rprefs.Path;
+                this.selected = rprefs.Selected;
+                ReadFolder(this.Path);
+            }
+
+            var uprefs = new UserPreferences();
+            this.Height = uprefs.WindowHeight;
+            this.Width = uprefs.WindowWidth;
+            this.Top = uprefs.WindowTop;
+            this.Left = uprefs.WindowLeft;
+            this.WindowState = uprefs.WindowState; 
         }
 
         private void CancelTasks()
@@ -166,6 +177,8 @@ namespace ModelEditor
         {
             CancelTasks();
 
+            if (string.IsNullOrEmpty(path)) return;
+
             DirectoryInfo di = new DirectoryInfo(path);
             if (di.Exists)
             {
@@ -194,9 +207,13 @@ namespace ModelEditor
 
                 try
                 {
-                    int selected = Task.WaitAny(tasks.ToArray());
-                    if (selected > -1)
-                        lvm.SelectedItem = lvm.Items[selected];
+                    int ix = Task.WaitAny(tasks.ToArray());
+
+                    if (saveChoice && selected > -1)
+                        ix = selected;
+                    
+                    if (ix > -1 && ix < fis.Length)
+                        lvm.SelectedItem = lvm.Items[ix];
                 }
                 catch (System.AggregateException ex)
                 {
@@ -245,10 +262,7 @@ namespace ModelEditor
                         TreeViewModel tvm = data.Items[0];      // root model
                         XmlElement el = xd.CreateElement(string.Empty, tvm.Node.Name, string.Empty);
                         
-                        IterateTree(tvm, xd, el);
-
-                        
-
+                        IterateTree(tvm, xd, el); 
                         xd.AppendChild(el);
 
                         xd.Save(data.FileFullName);
@@ -294,7 +308,15 @@ namespace ModelEditor
             
             CancelTasks();
 
-            var prefs = new UserPreferences
+            var rprefs = new ReestrPreferences
+            {
+                Path = this.Path,
+                SaveChoice = this.SaveChoice,
+                Selected = lst_Files.SelectedIndex
+            };
+            rprefs.Save();            
+
+            var uprefs = new UserPreferences
             {
                 WindowLeft = this.Left,
                 WindowTop = this.Top,
@@ -302,7 +324,8 @@ namespace ModelEditor
                 WindowHeight = this.Height,
                 WindowState = this.WindowState
             };
-            prefs.Save();            
+            uprefs.Save();            
+
         }
 
         private void lst_Files_SelectionChanged(object sender, SelectionChangedEventArgs e)

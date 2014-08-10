@@ -150,7 +150,7 @@ namespace ModelEditor.ViewModels
             {
                 if (plugin != null)
                 {
-                    XmlNode old = Node.Clone();
+                    XmlNode old = Node.CloneNode(true);
 
                     Node = plugin.Save(editor, Node);
                     Name = plugin.GetNodeName(Node);            // fire OnPropertyChanged event
@@ -174,7 +174,7 @@ namespace ModelEditor.ViewModels
                                 el.RemoveAll();
                                 foreach (XmlNode child in Node.ChildNodes)
                                 {
-                                    el.AppendChild(child.Clone());
+                                    el.AppendChild(child.CloneNode(false));
                                 }
                             }
                             else
