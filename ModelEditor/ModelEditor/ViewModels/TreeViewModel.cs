@@ -14,8 +14,7 @@ namespace ModelEditor.ViewModels
         private bool isExpanded;
         private string name;
         private IPlugin plugin;
-
-        private XmlNode node;
+       
         private Button applyBtn;
         private UIElement editor;
 
@@ -46,18 +45,7 @@ namespace ModelEditor.ViewModels
             }
         }
 
-        public XmlNode Node
-        {
-            get
-            {
-                return node;
-            }
-            set
-            {
-                node =  value;
-                OnPropertyChanged("Node");
-            }
-        }
+        public XmlNode Node { get; set; }
 
         public MainWindow Owner { get; set; }
 
@@ -199,11 +187,9 @@ namespace ModelEditor.ViewModels
                                 }
                             }
                         }
-                        tvm.Node = tvm.Node;
+                        tvm.editor = null;
                         tvm = tvm.Parent;
                     }
-                   
-
                 }
             }
             catch (System.Exception ex)
