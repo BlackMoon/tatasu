@@ -125,44 +125,65 @@ namespace ModelEditor.Plugins
                            task.Status == TaskStatus.WaitingForActivation))
             {
                 tokenSource.Cancel();
-            }
-
-            plugins.Clear();
+            }            
 
             task = Task.Factory.StartNew((ct) =>
-            {
-                try
-                {   
-                    using (TextReader tr = new StreamReader(PLUGINS_DESCRIPTION))
+            {                
+                CancellationToken token = (CancellationToken)ct;
+
+                if (token.IsCancellationRequested)
+                    token.ThrowIfCancellationRequested();
+
+                plugins.Clear();               
+
+                using (TextReader tr = new StreamReader(PLUGINS_DESCRIPTION))
+                {
+                    List<PluginDescription> pds = XmlHelper.Deserialize<List<PluginDescription>>(tr, "plugins");
+                    tr.Close();
+
+                    foreach (PluginDescription pd in pds)
                     {
-                        List<PluginDescription> pds = XmlHelper.Deserialize<List<PluginDescription>>(tr, "plugins");
-                        tr.Close();
-
-                        foreach (PluginDescription pd in pds)
+                        try
                         {
-                            Assembly a = Assembly.LoadFrom(pd.AssemblyName);                                                        
-                            IPlugin p = (IPlugin)a.CreateInstance(pd.TypeFullName);
-                            
-                            pd.Plugin = p;
+                            Assembly a = Assembly.LoadFrom(pd.AssemblyName);
+                            if (a != null)
+                            {
+                                IPlugin p = (IPlugin)a.CreateInstance(pd.TypeFullName);
 
-                            if (!plugins.ContainsKey(pd.ModelName))
-                                plugins.Add(pd.ModelName, pd);
+                                if (p != null)
+                                {
+                                    pd.Plugin = p;
+
+                                    if (!plugins.ContainsKey(pd.ModelName))
+                                        plugins.Add(pd.ModelName, pd);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.Message);
+                            continue;
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                }
+                }               
             }, tokenSource.Token);
         }
 
         public void Load()
-        {   
-            if (File.Exists(PLUGINS_DESCRIPTION))
-                LoadFromXml();           
-            else
-                LoadFromFolder();
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    LoadFromXml();
+                    task.Wait();
+                }
+                catch (AggregateException ex)
+                {
+                    LoadFromFolder();
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+            });
         }
 
         public void LoadFromFolder()

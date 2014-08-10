@@ -51,7 +51,7 @@
             </ToolBar>
             <ToolBar>
                 <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <CheckBox Content="Запомнить выбор" />
+                    <CheckBox Content="Запомнить выбор" IsChecked="{Binding Path = SaveChoice}" />
                 </DockPanel>
             </ToolBar>
         </ToolBarTray>
@@ -95,10 +95,10 @@
         <DockPanel Grid.ColumnSpan="3" Grid.Row="4">
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <TextBlock Name="lblInfo" />
+                    <TextBlock Name="lblInfo" Text="{Binding Path = Path}"/>
                 </StatusBarItem>
-                <StatusBarItem HorizontalAlignment="Right">
-                    <TextBlock Name="lblStatus" />
+                <StatusBarItem HorizontalAlignment="Center">
+                    <TextBlock Name="lblStatus" Text="{Binding Path = State}" />
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>

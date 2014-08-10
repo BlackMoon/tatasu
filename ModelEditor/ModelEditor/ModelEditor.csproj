@@ -64,6 +64,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\FileData.cs" />
     <Compile Include="Plugins\PluginDescription.cs" />
+    <Compile Include="ReestrPrefernces.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\PluginViewModel.cs" />

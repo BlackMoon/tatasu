@@ -17,11 +17,18 @@ namespace ModelEditor
         {
             InitializeComponent();
             lst_Plugins.DataContext = pvm;
-            
-            pluginManager.Task.Wait();
-            foreach (PluginDescription pd in pluginManager.Plugins.Values)
+
+            try
             {
-                pvm.Items.Add(pd);
+                pluginManager.Task.Wait();
+                foreach (PluginDescription pd in pluginManager.Plugins.Values)
+                {
+                    pvm.Items.Add(pd);
+                }
+            }
+            catch (System.AggregateException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }  
 

@@ -14,6 +14,9 @@ namespace ModelEditor.ViewModels
         private bool isExpanded;
         private string name;
         private IPlugin plugin;
+
+        private XmlNode node;
+        private Button applyBtn;
         private UIElement editor;
 
         private ObservableCollection<TreeViewModel> items;
@@ -43,12 +46,46 @@ namespace ModelEditor.ViewModels
             }
         }
 
-        public XmlNode Node { get; set; }
+        public XmlNode Node
+        {
+            get
+            {
+                return node;
+            }
+            set
+            {
+                node =  value;
+                OnPropertyChanged("Node");
+            }
+        }
+
+        public MainWindow Owner { get; set; }
+
+        public TreeViewModel Parent { get; set; }
 
         public IPlugin Plugin {
             get
             {
                 return plugin;
+            }
+        }
+
+        public Button ApplyBtn
+        {
+            get
+            {
+                if (applyBtn == null)
+                {
+                    applyBtn = new Button() 
+                    { 
+                        Content = "Применить", 
+                        HorizontalAlignment = HorizontalAlignment.Left, 
+                        Margin = new Thickness(4, 4, 0, 0),  
+                        Width = 140                        
+                    };
+                    applyBtn.Click += new RoutedEventHandler(applyBtn_Click);
+                }
+                return applyBtn;
             }
         }
 
@@ -114,6 +151,69 @@ namespace ModelEditor.ViewModels
             {
                 return Xml;
             }
+        }
+
+        private void applyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = "OK";
+            MessageBoxImage icon = MessageBoxImage.Information;
+
+            try
+            {
+                if (plugin != null)
+                {
+                    XmlNode old = Node.Clone();
+
+                    Node = plugin.Save(editor, Node);
+                    Name = plugin.GetNodeName(Node);            // fire OnPropertyChanged event
+
+                    // replace only parent nodes content                        
+                    string xpath = ".//" + old.Name;
+                    foreach (XmlAttribute attr in old.Attributes)
+                    {
+                        xpath += "[@" + attr.Name + "= '" + attr.Value + "'] ";
+                    }       
+
+                    TreeViewModel tvm = Parent;
+                    while (tvm != null)
+                    {       
+                        XmlNode nd = tvm.Node.SelectSingleNode(xpath);
+                        if (nd != null)
+                        {
+                            XmlElement el = (XmlElement)nd;
+                            if (old.HasChildNodes)
+                            {
+                                el.RemoveAll();
+                                foreach (XmlNode child in Node.ChildNodes)
+                                {
+                                    el.AppendChild(child.Clone());
+                                }
+                            }
+                            else
+                            {
+                                el.RemoveAllAttributes();
+
+                                foreach (XmlAttribute attr in Node.Attributes)
+                                {
+                                    el.SetAttribute(attr.Name, attr.Value);
+                                }
+                            }
+                        }
+                        tvm.Node = tvm.Node;
+                        tvm = tvm.Parent;
+                    }
+                   
+
+                }
+            }
+            catch (System.Exception ex)
+            {
+                msg = ex.Message;
+                icon = MessageBoxImage.Warning;
+            }
+
+            MessageBox.Show(msg, "Внимание", MessageBoxButton.OK, icon);
+            Owner.State = "Изменен";
         }
     }
 }

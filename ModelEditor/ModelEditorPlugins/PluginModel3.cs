@@ -66,12 +66,16 @@ namespace ModelEditorPlugins
 
         public string GetNodeName(XmlNode nd)
         {
-            string name = nd.Name;
+            string name = null;
 
-            var attr = nd.Attributes["Name"];
-            if (attr != null)
-                name = attr.Value;
+            if (nd != null)
+            {
+                name = nd.Name;
 
+                var attr = nd.Attributes["Name"];
+                if (attr != null)
+                    name = attr.Value;
+            }
             return name;
         }
        
@@ -162,6 +166,29 @@ namespace ModelEditorPlugins
             dataGrid.ItemsSource = rows;
 
             return dataGrid;       
+        }
+
+        public XmlNode Save(UIElement control, XmlNode nd)
+        {
+            XmlDocument xd = nd.OwnerDocument;
+            XmlElement el = xd.CreateElement(node);           
+
+            DataGrid dataGrid = (DataGrid)control;
+            foreach (var item in dataGrid.Items)
+            {
+                if (item is Row3)
+                {
+                    Row3 r = (Row3)item;
+
+                    XmlElement child = xd.CreateElement("Equipment");
+                    child.SetAttribute("Name", r.Name);                    
+                    child.SetAttribute("FileName", r.FileName);
+
+                    el.AppendChild(child);
+                }
+            }
+
+            return el;
         }
     }
 }

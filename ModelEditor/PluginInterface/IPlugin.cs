@@ -13,5 +13,6 @@ namespace PluginInterface
 
         string GetNodeName(XmlNode nd);
         UIElement GetEditor(XmlNode nd);
+        XmlNode Save(UIElement control, XmlNode nd);
     }
 }
