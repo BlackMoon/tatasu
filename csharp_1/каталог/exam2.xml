@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<Initialization>
+  <Parameters>
+    <Parameter Name="Equipment library group" Value="Библиотека оборудования" />
+    <Parameter Name="Sliders Check Interval" Value="100" />
+    <Parameter Name="Sensors Wait Time" Value="100" />
+    <Parameter Name="Init Wait Time" Value="100" />
+    <Parameter Name="Close Timeout" Value="5" />
+    <Parameter Name="Get Sensors Values Time" Value="15000" />
+    <Parameter Name="Get Sensors First Values Time" Value="20000" />
+    <Parameter Name="Aggregate Sensor Values Method File" Value="ConfigFiles\Среднее значение датчика.fs" />
+    <Parameter Name="Recalc Method File" Value="ConfigFiles\Масло.fs" />
+    <Parameter Name="Slider Visualisztion Module" Value="MultiValvesSlider.bpl" />
+    <Parameter Name="Maximum Flow Percent" Value="92" />
+    <Parameter Name="Minimal Head Percent" Value="15" />
+    <Parameter Name="Zones Count" Value="20" />
+    <Parameter Name="Test params group" Value="Установка параметров испытания" />
+    <Parameter Name="Vibration Measure" Value="True" />
+    <Parameter Name="Vibration Chart Interpolation" Value="False" />
+    <Parameter Name="Vibration Chart Smooth Factor" Value="4" />
+    <Parameter Name="Vibration Chart Time Interval" Value="2000" />
+  </Parameters>
+  <RecalcInputParameters>
+    <Parameter Type="Value" VarName="EngineEff" VarType="Double" Value="0.94" />
+    <Parameter Type="Value" VarName="EngineRunIdlePower" VarType="Double" Value="6.098" />
+    <Parameter Type="Object" VarName="PumpStageCount" VarType="Integer" Code="Stage Count" Name="Количество ступеней" Path="Библиотека оборудования" />
+    <Parameter Type="Object" VarName="PumpOptimalFlow" VarType="Double" Code="Оптимальный расход" Name="Оптимальный расход" Path="Библиотека оборудования" />
+    <Parameter Type="Object" VarName="PumpNominalFlow" VarType="Double" Code="Номинальный расход" Name="Номинальный расход" Path="Библиотека оборудования" />
+    <Parameter Type="Object" VarName="PumpEtalonRPM" VarType="Integer" Code="Обороты эталона" Name="Обороты эталона" Path="Библиотека оборудования" />
+    <Parameter Type="Protocol" VarName="OilD20" VarType="Double" Code="D20" Name="Плотность при 20 градусах" Path="Установка параметров масла" />
+    <Parameter Type="Protocol" VarName="OilD50" VarType="Double" Code="D50" Name="Плотность при 50 градусах" Path="Установка параметров масла" />
+    <Parameter Type="Protocol" VarName="OilV20" VarType="Double" Code="V20" Name="Вязкость при 20 градусах" Path="Установка параметров масла" />
+    <Parameter Type="Protocol" VarName="OilV50" VarType="Double" Code="V50" Name="Вязкость при 50 градусах" Path="Установка параметров масла" />
+    <Parameter Type="Sensor" VarName="SensFlow" VarType="Double" Command="GetFlow" Caption="Расход" Color="clRed" Hidden="False" />
+    <Parameter Type="Sensor" VarName="SensTemperature" VarType="Double" Command="GetTemperature" Caption="Температура" Color="clGreen" Hidden="False" />
+    <Parameter Type="Sensor" VarName="SensPower" VarType="Double" Command="GetPower" Caption="Мощность" Color="clBlack" Hidden="False" />
+    <Parameter Type="Sensor" VarName="SensRPM" VarType="Double" Command="GetRPM" Caption="Обороты" Color="clBlue" Hidden="True" />
+    <Parameter Type="Sensor" VarName="SensPressureLow" VarType="Double" Command="GetPressureLow" Caption="Давление на входе" Color="clPurple" Hidden="False" />
+    <Parameter Type="Sensor" VarName="SensPressureHigh" VarType="Double" Command="GetPressureHigh" Caption="Давление на выходе" Color="clTeal" Hidden="False" />
+  </RecalcInputParameters>
+  <Vibration>
+    <Sensor Name="Vibrospeed_A" Command="VibrationHeadSensorValue" Caption="Головка" Color="clBlue" />
+    <Sensor Name="Vibrospeed_B" Command="VibrationBodySensorValue" Caption="Середина" Color="clRed" />
+    <Sensor Name="Vibrospeed_C" Command="VibrationFooterSensorValue" Caption="Основание" Color="clGreen" />
+  </Vibration>
+  <Equipments>
+    <Equipment Name="Многоклапанная задвижка" FileName="MultiValvesSlider.bpl" />
+    <Equipment Name="Контроллер" FileName="Dummy.bpl" />
+  </Equipments>
+  <Commands>
+    <Command Name="SliderCount" Equipment="Многоклапанная задвижка" Command="GetCount" />
+    <Command Name="SliderPositions" Equipment="Многоклапанная задвижка" Command="GetPositions" />
+    <Command Name="SliderStartPosition" Equipment="Многоклапанная задвижка" Command="StartPosition" />
+    <Command Name="SliderNextPosition" Equipment="Многоклапанная задвижка" Command="NextPosition" />
+    <Command Name="SliderPositionReached" Equipment="Многоклапанная задвижка" Command="ReachPosition" />
+    <Command Name="SliderStop" Equipment="Многоклапанная задвижка" Command="Stop" />
+    <Command Name="SliderPumpingPosition" Equipment="Многоклапанная задвижка" Command="PumpingPosition" />
+    <Command Name="SliderIsFinishPosition" Equipment="Многоклапанная задвижка" Command="IsFinishPosition" />
+    <Command Name="SliderFinalPosition" Equipment="Многоклапанная задвижка" Command="FinalPosition" />
+    <Command Name="GetFlow" Equipment="Контроллер" Command="GetFlow" />
+    <Command Name="GetTemperature" Equipment="Контроллер" Command="GetTemperature" />
+    <Command Name="GetPower" Equipment="Контроллер" Command="GetPower" />
+    <Command Name="GetPressureLow" Equipment="Контроллер" Command="GetInputPressure" />
+    <Command Name="GetPressureHigh" Equipment="Контроллер" Command="GetOutputPressure" />
+    <Command Name="GetRPM" Equipment="Контроллер" Command="GetRPM" />
+    <Command Name="VibrationHeadSensorValue" Equipment="Контроллер" Command="GetVibrospeedA" />
+    <Command Name="VibrationBodySensorValue" Equipment="Контроллер" Command="GetVibrospeedB" />
+    <Command Name="VibrationFooterSensorValue" Equipment="Контроллер" Command="GetVibrospeedC" />
+  </Commands>
+</Initialization>

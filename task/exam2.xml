@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1251"?>
 <Initialization>
   <Parameters>
-    <Parameter />
+    <Parameter Name="Equipment library group" Value="Библиотека оборудования" />
     <Parameter Name="Sliders Check Interval" Value="100" />
     <Parameter Name="Sensors Wait Time" Value="100" />
     <Parameter Name="Init Wait Time" Value="100" />
@@ -11,7 +11,7 @@
     <Parameter Name="Aggregate Sensor Values Method File" Value="ConfigFiles\Среднее значение датчика.fs" />
     <Parameter Name="Recalc Method File" Value="ConfigFiles\Масло.fs" />
     <Parameter Name="Slider Visualisztion Module" Value="MultiValvesSlider.bpl" />
-    <Parameter Name="Maximum Flow Percent" Value="56" />
+    <Parameter Name="Maximum Flow Percent" Value="92" />
     <Parameter Name="Minimal Head Percent" Value="15" />
     <Parameter Name="Zones Count" Value="20" />
     <Parameter Name="Test params group" Value="Установка параметров испытания" />
@@ -46,7 +46,6 @@
   <Equipments>
     <Equipment Name="Многоклапанная задвижка" FileName="MultiValvesSlider.bpl" />
     <Equipment Name="Контроллер" FileName="Dummy.bpl" />
-    <Equipment Name="1" FileName="1" />
   </Equipments>
   <Commands>
     <Command Name="SliderCount" Equipment="Многоклапанная задвижка" Command="GetCount" />
@@ -66,5 +65,6 @@
     <Command Name="GetRPM" Equipment="Контроллер" Command="GetRPM" />
     <Command Name="VibrationHeadSensorValue" Equipment="Контроллер" Command="GetVibrospeedA" />
     <Command Name="VibrationBodySensorValue" Equipment="Контроллер" Command="GetVibrospeedB" />
+    <Command Name="VibrationFooterSensorValue" Equipment="Контроллер" Command="GetVibrospeedC" />
   </Commands>
 </Initialization>
